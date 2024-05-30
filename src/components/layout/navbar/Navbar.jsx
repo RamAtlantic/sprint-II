@@ -14,7 +14,7 @@ import Toolbar from "@mui/material/Toolbar";
 import { menuItems } from "../../../router/navigation.jsx";
 import { Link, Outlet, useNavigate } from "react-router-dom";
 import { Button, Typography, Avatar, Snackbar, Alert } from "@mui/material";
-import logo from "../../../../public/logo1.png";
+
 import LogoutIcon from "@mui/icons-material/Logout";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
@@ -176,7 +176,11 @@ function Navbar(props) {
               padding: "0.5rem",
             }}
           >
-            <img className="logoimg" src={logo} alt="Logo" />
+            <img
+              className="logoimg"
+              src="https://firebasestorage.googleapis.com/v0/b/spazio-f05f1.appspot.com/o/nuevaCarpeta%2FLogo1.png?alt=media&token=4ca5bdc7-8152-4f89-86ea-21ee3ee6f7a7"
+              alt="Logo"
+            />
           </Link>
           <div
             className="user-info"
