@@ -77,6 +77,35 @@ const Dashboard = () => {
       .catch((error) => console.error("Error:", error));
   };
 
+  const [categorias, setCategorias] = React.useState([]);
+
+  const obtenerCategorias = async () => {
+    try {
+      const response = await fetch(
+        "https://api.curso.spazioserver.online/categorias/listar",
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (response.ok) {
+        const data = await response.json();
+        setCategorias(data);
+        console.log("Solicitud HTTP GET exitosa");
+      } else {
+        console.error("Error en la solicitud HTTP GET:", response.statusText);
+      }
+    } catch (error) {
+      console.error("Error en la solicitud HTTP GET:", error);
+    }
+  };
+
+  obtenerCategorias();
+  console.log(categorias);
+
   const agregarCategoria = (lugar) => {
     setSelectedLugar(lugar);
     setSelectedCategories(lugar.categorias);
@@ -167,12 +196,11 @@ const Dashboard = () => {
                 <Autocomplete
                   multiple
                   id="tags-outlined"
-                  options={lugares.reduce((acc, curr) => {
-                    curr.categorias.forEach((cat) => {
-                      if (!acc.find((el) => el.id === cat.id)) acc.push(cat);
-                    });
-                    return acc;
-                  }, [])}
+                  options={categorias.filter(
+                    (cat) =>
+                      !lugar.categorias.includes(cat.id) &&
+                      !selectedCategories.map((sc) => sc.id).includes(cat.id)
+                  )}
                   getOptionLabel={(option) => option.nombre}
                   filterSelectedOptions
                   value={selectedCategories}
