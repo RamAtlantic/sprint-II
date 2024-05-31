@@ -3,12 +3,7 @@
     { "source": "/home", "destination": "/" },
     { "source": "/list", "destination": "/" },
     { "source": "/form", "destination": "/" },
+    { "source": "/cuenta", "destination": "/" },
     { "source": "/space/:id", "destination": "/" }
-  ],
-  "headers": [
-    {
-      "source": "https://api.curso.spazioserver.online/**",
-      "headers": [{ "key": "Access-Control-Allow-Origin", "value": "*" }]
-    }
   ]
 }
