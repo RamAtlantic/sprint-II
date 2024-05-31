@@ -247,7 +247,9 @@ function Navbar(props) {
               onClick={handleDrawerToggle}
               sx={{ margin: "1rem" }}
             >
-              <MenuIcon sx={{ fontSize: "200%", color: "white" }} />
+              <MenuIcon
+                sx={{ fontSize: "200%", color: "white", marginRight: "1rem" }}
+              />
             </IconButton>
           )}
         </Toolbar>
