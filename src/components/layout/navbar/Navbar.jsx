@@ -153,6 +153,7 @@ function Navbar(props) {
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
+            width: "90%",
           }}
         >
           <Link
@@ -241,16 +242,21 @@ function Navbar(props) {
           </div>
 
           {isLogged && (
-            <IconButton
-              aria-label="open drawer"
-              edge="start"
-              onClick={handleDrawerToggle}
-              sx={{ margin: "1rem" }}
-            >
-              <MenuIcon
-                sx={{ fontSize: "200%", color: "white", marginRight: "1rem" }}
-              />
-            </IconButton>
+            <div style={{ padding: "rem" }}>
+              <IconButton
+                aria-label="open drawer"
+                edge="start"
+                onClick={handleDrawerToggle}
+                sx={{ marginRight: "-3rem" }}
+              >
+                <MenuIcon
+                  sx={{
+                    fontSize: "150%",
+                    color: "white",
+                  }}
+                />
+              </IconButton>
+            </div>
           )}
         </Toolbar>
       </AppBar>
