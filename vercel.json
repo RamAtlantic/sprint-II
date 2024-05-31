@@ -5,6 +5,7 @@
     { "source": "/form", "destination": "/" },
     { "source": "/space/:id", "destination": "/" }
   ],
+
   "headers": [
     {
       "source": "https://api.curso.spazioserver.online/**",
