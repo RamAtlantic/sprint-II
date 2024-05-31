@@ -4,6 +4,7 @@
     { "source": "/list", "destination": "/" },
     { "source": "/form", "destination": "/" },
     { "source": "/cuenta", "destination": "/" },
+    { "source": "/dashboard", "destination": "/" },
     { "source": "/space/:id", "destination": "/" }
   ]
 }

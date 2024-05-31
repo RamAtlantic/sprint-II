@@ -103,8 +103,9 @@ const Dashboard = () => {
     }
   };
 
-  obtenerCategorias();
-  console.log(categorias);
+  useEffect(() => {
+    obtenerCategorias();
+  }, []);
 
   const agregarCategoria = (lugar) => {
     setSelectedLugar(lugar);
