@@ -187,6 +187,7 @@ const EspacioVista = () => {
               gridTemplateColumns: "70% auto", // 50% para el CardGrande, y el resto se divide automáticamente
               width: "50rem", // Ajustar al 100% del contenedor
               marginTop: "1rem",
+              height: "auto",
             }}
           >
             <div
@@ -261,7 +262,7 @@ const EspacioVista = () => {
             <div
               style={{
                 width: "100%",
-                height: "15rem",
+                height: "auto",
                 borderRadius: "50px",
                 borderTopRightRadius: "0px",
                 borderTopLeftRadius: "0px",
