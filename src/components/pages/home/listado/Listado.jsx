@@ -18,8 +18,10 @@ const Listado = () => {
     }
   }, [user, rolAdmin, rolAdminTotal, navigate]);
 */
+
   const [lugares, setLugares] = useState([]);
 
+  
   useEffect(() => {
     // Llamada a la API
     fetch("https://api.curso.spazioserver.online/lugares/listar")
