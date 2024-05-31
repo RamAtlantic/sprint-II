@@ -245,7 +245,7 @@ function Navbar(props) {
               aria-label="open drawer"
               edge="start"
               onClick={handleDrawerToggle}
-              sx={{ marginLeft: "0.5rem" }}
+              sx={{ margin: "1rem" }}
             >
               <MenuIcon sx={{ fontSize: "200%", color: "white" }} />
             </IconButton>
