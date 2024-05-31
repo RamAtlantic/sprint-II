@@ -134,18 +134,6 @@ function Navbar(props) {
             </ListItem>
           </Link>
         )}
-        <ListItem disablePadding>
-          <ListItemButton onClick={cerrarSesion}>
-            <ListItemIcon>
-              <LogoutIcon sx={{ color: "#CE8B67" }} />
-            </ListItemIcon>
-            <Typography
-              sx={{ color: "#CE8B67", fontFamily: '"Dosis", sans-serif' }}
-            >
-              Cerrar sesión
-            </Typography>
-          </ListItemButton>
-        </ListItem>
       </List>
     </div>
   );
