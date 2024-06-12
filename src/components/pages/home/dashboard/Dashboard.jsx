@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Avatar,
   Box,
@@ -18,7 +18,6 @@ import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import ClassIcon from "@mui/icons-material/Class";
 import { useNavigate } from "react-router-dom";
-import { AuthContext } from "../../../context/AuthContext";
 
 const SpaceCard = styled(Paper)(({ theme }) => ({
   padding: theme.spacing(3),
@@ -49,18 +48,7 @@ const Dashboard = () => {
   const [idCaracteristicas, setIdCaracteristicas] = useState([]);
   const [state, setState] = useState(false);
 
-  const [userData, setUserData] = useState(null);
-  const { user } = useContext(AuthContext);
   const navigate = useNavigate();
-  console.log(user);
-
-  const rolAdminTotal = import.meta.env.VITE_ADMINTOTAL;
-
-  useEffect(() => {
-    if (!user || user.rol !== rolAdminTotal) {
-      navigate("/login");
-    }
-  }, [user, rolAdminTotal, navigate]);
 
   useEffect(() => {
     // Llamada a la API

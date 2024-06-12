@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import CardGrande from "../cardsImage/CardGrande";
 import CardChica from "../cardsImage/CardChica";
 import { Button } from "@mui/material";
@@ -8,14 +8,18 @@ import "./EspacioVista.css";
 import { useMediaQuery } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import CardMobile from "../cardsImage/CardMobile.jsx";
+import StarRating from "./StarRating.jsx";
+import { AuthContext } from "../../../../context/AuthContext.jsx";
 
 const EspacioVista = () => {
   const { id } = useParams();
+  const {isLogged} = useContext(AuthContext)
 
   const [space, setSpace] = useState([]);
   const [arrayFotos, setArrayFotos] = useState([]);
   const [categorias, setCategorias] = useState([]);
   const [caracteristicas, setCaracteristicas] = useState([]);
+  const [rating, setRating] = useState(0);
 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
@@ -360,7 +364,9 @@ const EspacioVista = () => {
                     </div>
                   ))}
                 </h6>
-
+                {isLogged &&(<StarRating rating={rating} setRating={setRating}/>)}
+              
+                
                 <div style={{ width: "100%", textAlign: "right" }}>
                   <Button
                     variant="text"

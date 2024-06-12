@@ -11,7 +11,6 @@ import {
 import { styled } from "@mui/system";
 import LockResetIcon from "@mui/icons-material/LockReset";
 import { AuthContext } from "../../../context/AuthContext";
-import { useNavigate } from "react-router-dom";
 
 const UserInfo = styled(Paper)(({ theme }) => ({
   padding: theme.spacing(3),
@@ -35,17 +34,6 @@ const UserDetails = styled(Box)(({ theme }) => ({
 const Cuenta = () => {
   const { user } = useContext(AuthContext);
   const [userData, setUserData] = useState(null);
-
-  console.log(user);
-
-  const rolAdminTotal = import.meta.env.VITE_ADMINTOTAL;
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    if (!user || user.rol !== rolAdminTotal) {
-      navigate("/login");
-    }
-  }, [user, rolAdminTotal, navigate]);
 
   useEffect(() => {
     if (user && user.email) {
