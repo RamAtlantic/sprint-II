@@ -13,7 +13,7 @@ import { AuthContext } from "../../../../context/AuthContext.jsx";
 
 const EspacioVista = () => {
   const { id } = useParams();
-  const {isLogged} = useContext(AuthContext)
+  const { isLogged } = useContext(AuthContext);
 
   const [space, setSpace] = useState([]);
   const [arrayFotos, setArrayFotos] = useState([]);
@@ -349,7 +349,7 @@ const EspacioVista = () => {
                     Caracteristicas:
                   </p>
 
-                  {caracteristicas.map((categoria, index) => (
+                  {caracteristicas.map((caracteristica, index) => (
                     <div
                       style={{
                         display: "flex",
@@ -358,15 +358,18 @@ const EspacioVista = () => {
                       }}
                     >
                       <p style={{ textAlign: "left" }} key={index}>
-                        {caracteristicaRenderMap[categoria.id]}
+                        {caracteristicaRenderMap[caracteristica.id]}
                       </p>
-                      <p style={{ textAlign: "left" }}>{categoria.nombre}</p>
+                      <p style={{ textAlign: "left" }}>
+                        {caracteristica.nombre}
+                      </p>
                     </div>
                   ))}
                 </h6>
-                {isLogged &&(<StarRating rating={rating} setRating={setRating}/>)}
-              
-                
+                {isLogged && (
+                  <StarRating rating={rating} setRating={setRating} />
+                )}
+
                 <div style={{ width: "100%", textAlign: "right" }}>
                   <Button
                     variant="text"
