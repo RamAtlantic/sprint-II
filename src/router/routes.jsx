@@ -12,6 +12,7 @@ import Dashboard from "../components/pages/home/dashboard/Dashboard.jsx";
 import Favoritos from "../components/pages/home/favoritos/Favoritos.jsx";
 import ListadoAleatorio from "../components/pages/home/listado/ListadoAleatorio.jsx";
 import ListadoSearch from "../components/pages/home/listado/ListadoSearch.jsx";
+import Reserva from "../components/pages/reserva/Reserva.jsx";
 
 // const HomeAndSearch = () => (
 //     <Box sx={{ margin: 0, padding: 0 }}>
@@ -70,5 +71,10 @@ export const routes = [
     id: "favoritos",
     path: "/favoritos",
     Element: Favoritos,
+  },
+  {
+    id: "reserva",
+    path: "/reserva/:id",
+    Element: Reserva,
   },
 ];
