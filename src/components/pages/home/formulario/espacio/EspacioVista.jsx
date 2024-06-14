@@ -8,6 +8,7 @@ import "./EspacioVista.css";
 import { useMediaQuery } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import CardMobile from "../cardsImage/CardMobile.jsx";
+import StarRating from "./StarRating.jsx";
 
 const EspacioVista = () => {
   const { id } = useParams();
@@ -419,6 +420,8 @@ const EspacioVista = () => {
                     </div>
                   ))}
                 </h6>
+
+                <StarRating />
 
                 <h6
                   style={{
