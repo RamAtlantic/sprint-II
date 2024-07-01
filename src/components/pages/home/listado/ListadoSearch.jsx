@@ -7,56 +7,87 @@ import Search from "../search/Search";
 import { Box } from "@mui/material";
 import { AuthContext } from "../../../context/AuthContext";
 import axios from "axios";
+import { format } from "date-fns";
 
 const ListadoSearch = () => {
-  const { categorysFiltro } = useContext(SearchContext);
-
-  const [lugaresFiltrados, setLugaresFiltrados] = useState([]);
-  const [lugares, setLugares] = useState([]);
-  const navigate = useNavigate();
-  const [actualizarLugares, setActualizarLugares] = useState(false);
-  const [isFavorite, setIsFavorite] = useState([]);
+  const { categorysFiltro, selectedDate } = useContext(SearchContext);
   const { isLogged, userId } = useContext(AuthContext);
 
-  useEffect(() => {
-    // Llamada a la API
-    fetch("https://api.curso.spazioserver.online/lugares/listar")
-      .then((response) => response.json())
-      .then((data) => {
-        setLugares(data);
-      })
-      .catch((error) => console.error("Error fetching data:", error));
-  }, [categorysFiltro, actualizarLugares]);
+  const [lugares, setLugares] = useState([]);
+  const [lugaresFiltrados, setLugaresFiltrados] = useState([]);
+  const [actualizarLugares, setActualizarLugares] = useState(false);
+  const [isFavorite, setIsFavorite] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    if (lugares.length > 0) {
-      handleFiltrar();
-    }
-  }, [lugares, categorysFiltro]);
-
-  const handleFiltrar = () => {
-    if (categorysFiltro.length > 0) {
-      const lugaresFiltrados = lugares.filter((lugar) =>
-        lugar.categorias.some((categoria) =>
-          categorysFiltro.some((filtro) => categoria.id === filtro)
-        )
-      );
-      setLugaresFiltrados(lugaresFiltrados);
-    } else {
-      setLugaresFiltrados(lugares);
-    }
-  };
-
-  useEffect(() => {
-    // Llamada a la API
-    fetch("https://api.curso.spazioserver.online/lugares/listar")
-      .then((response) => response.json())
-      .then((data) => setLugares(data))
-      .catch((error) => console.error("Error fetching data:", error));
+    const obtenerLugares = async () => {
+      try {
+        const response = await axios.get(
+          "https://api.curso.spazioserver.online/lugares/listar"
+        );
+        console.log("Lugares obtenidos:", response.data); // Log de lugares obtenidos
+        setLugares(response.data);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+    obtenerLugares();
   }, [actualizarLugares]);
 
   useEffect(() => {
-    // Buscar favoritos en componente
+    const handleFiltrar = async () => {
+      try {
+        const response = await fetch(
+          "https://api.curso.spazioserver.online/reservas"
+        );
+        const reservas = await response.json();
+
+        console.log("Reservas obtenidas:", reservas); // Log de reservas obtenidas
+
+        const lugaresFiltradosTemp = lugares
+          .map((lugar) => {
+            // Filtrar reservas por lugar y fecha seleccionada
+            const reservasPorLugar = reservas.filter(
+              (reserva) =>
+                reserva.lugarId.toString() === lugar.id.toString() &&
+                reserva.fecha.substring(0, 10) === selectedDate // Truncar a yyyy-MM-dd
+            );
+
+            // Verificar cantidad de reservas
+            const cantidadReservas = reservasPorLugar.length;
+
+            // Verificar disponibilidad de horas
+            const horasDisponibles = cantidadReservas < 17;
+
+            // Filtrar lugar si hay disponibilidad y categoría seleccionada, o si no se seleccionó categoría
+            const categoriaFiltrada =
+              categorysFiltro.length === 0 ||
+              lugar.categorias.some((categoria) =>
+                categorysFiltro.includes(categoria.id)
+              );
+
+            console.log(
+              `Filtrando lugar ${lugar.id} - Disponibilidad: ${horasDisponibles}, Categoría filtrada: ${categoriaFiltrada}`
+            ); // Log de filtrado por lugar
+
+            return horasDisponibles && categoriaFiltrada
+              ? { ...lugar, disponible: true }
+              : null;
+          })
+          .filter(Boolean); // Filtrar lugares nulos (sin disponibilidad)
+
+        console.log("Lugares filtrados:", lugaresFiltradosTemp); // Log de lugares filtrados
+
+        setLugaresFiltrados(lugaresFiltradosTemp);
+      } catch (error) {
+        console.error("Error fetching reservas:", error);
+      }
+    };
+
+    handleFiltrar();
+  }, [lugares, selectedDate, categorysFiltro]);
+
+  useEffect(() => {
     const buscarFavoritos = async () => {
       try {
         const response = await axios.get(
@@ -67,13 +98,14 @@ const ListadoSearch = () => {
         );
         setIsFavorite(favoritos);
       } catch (error) {
-        console.error("error buscando favoritos:", error);
+        console.error("Error buscando favoritos:", error);
       }
     };
+
     if (isLogged && userId) {
       buscarFavoritos();
     }
-  }, [userId, actualizarLugares]);
+  }, [userId, isLogged, actualizarLugares]);
 
   return (
     <Box

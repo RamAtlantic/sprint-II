@@ -1,40 +1,53 @@
-import * as React from "react";
-import dayjs from "dayjs";
-import "dayjs/locale/es"; // Importa el idioma
-import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import React from "react";
+import DatePicker, { registerLocale } from "react-datepicker";
+import es from "date-fns/locale/es";
+import "react-datepicker/dist/react-datepicker.css";
+import ReservationIcon from "@mui/icons-material/EventNote";
 
-const DatePickerComponent = ({ setSelectedOption2, selectedOption2 }) => {
-  const handleDateChange = (newValue) => {
-    setSelectedOption2(newValue);
-  };
+registerLocale("es", es);
 
-  console.log(selectedOption2);
+const DatePickerComponent = ({ selectedDate, handleDateChange }) => {
 
-  return (
-    <DemoContainer size="small" components={["DatePicker"]}>
-      <LocalizationProvider
-        sx={{ backgroundColor: "white" }}
-        dateAdapter={AdapterDayjs}
-        adapterLocale="es"
-      >
-        <DemoContainer components={["DatePicker"]}>
-          <DatePicker
-            label="Fecha de Reserva"
-            value={selectedOption2}
-            onChange={handleDateChange}
-            sx={{
-              backgroundColor: "white",
-              borderRadius: "5%",
-              margin: "1rem",
-            }}
-          />
-        </DemoContainer>
-      </LocalizationProvider>
-    </DemoContainer>
-  );
+    const handleDateChangeInternal = (date) => {
+        handleDateChange(date); // Llamar a la función pasada como prop
+    };
+
+    return (
+        <div style={{ textAlign: "center", alignItems: "center" }}>
+            <DatePicker
+                id="datepicker"
+                selected={selectedDate}
+                onChange={handleDateChangeInternal}
+                dateFormat="dd/MM/yyyy"
+                locale="es"
+                minDate={new Date()}
+                isClearable
+                placeholderText="Elige una fecha"
+                calendarClassName="custom-calendar"
+                customInput={<CustomInput />}
+            />
+        </div>
+    );
 };
+
+const CustomInput = React.forwardRef(({ value, onClick }, ref) => (
+    <div
+        style={{
+            display: "flex",
+            alignItems: "center",
+            padding: "14px 15px",
+            borderRadius: "5px",
+            backgroundColor: "white",
+            color: "#333333",
+            cursor: "pointer",
+            outline: "none",
+            width: "200px",
+        }}
+        onClick={onClick}
+    >
+        <ReservationIcon style={{ marginRight: "8px" }} />
+        {value || "Elige una fecha"}
+    </div>
+));
 
 export default DatePickerComponent;

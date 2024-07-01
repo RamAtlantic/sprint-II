@@ -1,87 +1,87 @@
 import React, { useState, useEffect } from "react";
+import { format } from "date-fns";
+import { useParams } from "react-router-dom";
 
-const HorarioDia = ({ selectedDate }) => {
-  const franjasNoDisponibles = ["14:00 - 15:00", "20:00 - 21:00"];
+const HorarioDia = ({ selectedDate, handleHoraChange }) => {
+  const { id } = useParams();
+
+  const [franjasNoDisponibles, setFranjasNoDisponibles] = useState([]);
+
+  useEffect(() => {
+    if (!id || !selectedDate) return;
+
+    fetch(`https://api.curso.spazioserver.online/reservas`)
+      .then((response) => response.json())
+      .then((data) => {
+        const reservasPorLugar = data.filter(
+          (reserva) => reserva.lugarId.toString() === id
+        );
+
+        const reservasFiltradas = reservasPorLugar.filter((reserva) => {
+          const horaFinReserva = reserva.horaFin.substring(0, 5);
+          return (
+            reserva.fecha === selectedDate &&
+            (horaFinReserva < "23:59" || horaFinReserva === "23:59")
+          );
+        });
+
+        const franjasOcupadas = reservasFiltradas.map((reserva) => ({
+          horaInicio: reserva.horaInicio.substring(0, 5),
+          horaFin: reserva.horaFin.substring(0, 5),
+        }));
+        setFranjasNoDisponibles(franjasOcupadas);
+      })
+      .catch((error) => console.error("Error fetching reservas:", error));
+  }, [id, selectedDate]);
 
   const generateFranjasHorarias = () => {
     const franjasHorarias = [];
     for (let hora = 7; hora < 24; hora++) {
       const horaInicio = `${hora.toString().padStart(2, "0")}:00`;
-      const horaFin = `${(hora + 1).toString().padStart(2, "0")}:00`;
-      franjasHorarias.push(`${horaInicio} - ${horaFin}`);
+      const horaFin =
+        hora < 23 ? `${(hora + 1).toString().padStart(2, "0")}:00` : "23:59";
+      franjasHorarias.push({ horaInicio, horaFin });
     }
     return franjasHorarias;
   };
 
   const [selectedHoras, setSelectedHoras] = useState([]);
   const [hoveredHora, setHoveredHora] = useState(null);
-  const [containerStyle, setContainerStyle] = useState({
-    display: "grid",
-    gridTemplateColumns: "repeat(2, 1fr)",
-    justifyContent: "center",
-    alignItems: "center",
-    gap: "0.5rem",
-    maxWidth: "250px",
-    margin: "10px auto",
-  });
 
   useEffect(() => {
-    const handleResize = () => {
-      const screenWidth = window.innerWidth;
-      if (screenWidth >= 570 && screenWidth <= 670) {
-        setContainerStyle({
-          display: "grid",
-          maxWidth: "125px",
-          margin: "10px auto",
-          gap: "0.3rem",
-        });
-      } else {
-        setContainerStyle({
-          display: "grid",
-          gridTemplateColumns: "repeat(2, 1fr)",
-          justifyContent: "center",
-          alignItems: "center",
-          gap: "0.5rem",
-          maxWidth: "250px",
-          margin: "10px auto",
-        });
-      }
-    };
+    handleHoraChange(selectedHoras);
+  }, [selectedHoras, handleHoraChange]);
 
-    handleResize();
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
+  useEffect(() => {
+    setSelectedHoras([]);
+  }, [selectedDate]);
 
-  const handleHoraChange = (hora) => {
-    if (franjasNoDisponibles.includes(hora)) return;
+  const handleHoraClick = (franja) => {
+    if (
+      franjasNoDisponibles.some(
+        (f) =>
+          f.horaInicio === franja.horaInicio && f.horaFin === franja.horaFin
+      )
+    )
+      return;
 
     setSelectedHoras((prevSelectedHoras) =>
-      prevSelectedHoras.includes(hora)
-        ? prevSelectedHoras.filter((h) => h !== hora)
-        : [...prevSelectedHoras, hora]
+      prevSelectedHoras.some(
+        (f) =>
+          f.horaInicio === franja.horaInicio && f.horaFin === franja.horaFin
+      )
+        ? prevSelectedHoras.filter(
+            (f) =>
+              f.horaInicio !== franja.horaInicio || f.horaFin !== franja.horaFin
+          )
+        : [...prevSelectedHoras, franja]
     );
   };
 
   const franjasHorarias = generateFranjasHorarias();
 
-  const handleReservarAhoraClick = () => {
-    // Lógica para reservar
-    console.log("Reservar ahora");
-  };
-
   return (
     <div style={{ textAlign: "center" }}>
-      <h2
-        style={{
-          color: "#1E3231",
-          fontSize: "1.2rem",
-          fontFamily: "Dosis",
-          fontWeight: "600",
-        }}
-      >
-        Horarios {selectedDate.toLocaleDateString()}
-      </h2>
       <div style={{ fontFamily: "Dosis", textAlign: "left", margin: "1rem" }}>
         <h4
           style={{
@@ -90,9 +90,10 @@ const HorarioDia = ({ selectedDate }) => {
             borderBottom: "2px solid #FF9550",
             paddingBottom: "0.5rem",
             color: "#1E3231",
+            textAlign: "center",
           }}
         >
-          Selecciona tus horarios
+          Elige tus horarios para el {format(selectedDate, "dd/MM/yyyy")}
         </h4>
         <div
           style={{
@@ -103,7 +104,11 @@ const HorarioDia = ({ selectedDate }) => {
           }}
         >
           {franjasHorarias.map((franja, index) => {
-            const isUnavailable = franjasNoDisponibles.includes(franja);
+            const isUnavailable = franjasNoDisponibles.some(
+              (f) =>
+                f.horaInicio === franja.horaInicio &&
+                f.horaFin === franja.horaFin
+            );
 
             return (
               <div
@@ -120,31 +125,49 @@ const HorarioDia = ({ selectedDate }) => {
               >
                 <input
                   type="checkbox"
-                  id={franja}
-                  name={franja}
+                  id={`${franja.horaInicio}-${franja.horaFin}`}
+                  name={`${franja.horaInicio}-${franja.horaFin}`}
                   style={{ display: "none" }}
-                  checked={selectedHoras.includes(franja)}
-                  onChange={() => handleHoraChange(franja)}
+                  checked={selectedHoras.some(
+                    (f) =>
+                      f.horaInicio === franja.horaInicio &&
+                      f.horaFin === franja.horaFin
+                  )}
+                  onChange={() => handleHoraClick(franja)}
                   disabled={isUnavailable}
                 />
                 <label
-                  htmlFor={franja}
+                  htmlFor={`${franja.horaInicio}-${franja.horaFin}`}
                   style={{
                     display: "inline-block",
                     border: `1px solid ${
-                      selectedHoras.includes(franja) ? "#00B5AD" : "#94B7D0"
+                      selectedHoras.some(
+                        (f) =>
+                          f.horaInicio === franja.horaInicio &&
+                          f.horaFin === franja.horaFin
+                      )
+                        ? "#00B5AD"
+                        : "#94B7D0"
                     }`,
                     borderRadius: "5px",
                     backgroundColor: isUnavailable
                       ? "#4D4D4D"
-                      : selectedHoras.includes(franja)
+                      : selectedHoras.some(
+                          (f) =>
+                            f.horaInicio === franja.horaInicio &&
+                            f.horaFin === franja.horaFin
+                        )
                       ? "#FF9550"
                       : hoveredHora === franja
                       ? "#94B7D0"
                       : "#FFFFFF",
                     color: isUnavailable
                       ? "#FFFFFF"
-                      : selectedHoras.includes(franja) || hoveredHora === franja
+                      : selectedHoras.some(
+                          (f) =>
+                            f.horaInicio === franja.horaInicio &&
+                            f.horaFin === franja.horaFin
+                        ) || hoveredHora === franja
                       ? "#FFFFFF"
                       : "#1E3231",
                     fontFamily: "'Dosis', sans-serif",
@@ -159,40 +182,16 @@ const HorarioDia = ({ selectedDate }) => {
                   onMouseLeave={() => setHoveredHora(null)}
                   onClick={(e) => {
                     e.preventDefault();
-                    handleHoraChange(franja);
+                    handleHoraClick(franja);
                   }}
                 >
-                  {franja}
+                  {`${franja.horaInicio} - ${franja.horaFin}`}
                 </label>
               </div>
             );
           })}
         </div>
       </div>
-      <button
-        onClick={handleReservarAhoraClick}
-        style={{
-          marginTop: "1rem",
-          marginBottom: "10px",
-          backgroundColor: "#00B5AD",
-          color: "#FFFFFF",
-          padding: "0.5rem 1rem",
-          border: "none",
-          borderRadius: "5px",
-          cursor: "pointer",
-          fontFamily: "'Dosis', sans-serif",
-          fontSize: "1rem",
-          transition: "background-color 0.3s",
-        }}
-        onMouseEnter={(e) => {
-          e.target.style.backgroundColor = "#007A75";
-        }}
-        onMouseLeave={(e) => {
-          e.target.style.backgroundColor = "#00B5AD";
-        }}
-      >
-        Reservar ahora
-      </button>
     </div>
   );
 };
